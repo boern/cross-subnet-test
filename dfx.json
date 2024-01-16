@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "canisters": {
+    "publisher": {
+      "gzip": true,
+      "package": "publisher",
+      "candid": "src/publisher/src/publisher.did",
+      "type": "rust"
+    },
+    "subscriber": {
+      "gzip": true,
+      "package": "subscriber",
+      "candid": "src/subscriber/src/subscriber.did",
+      "type": "rust"
+    },
+    "ecdsa_example_rust": {
+      "gzip": true,
+      "candid": "src/ecdsa_example_rust/ecdsa_example.did",
+      "package": "ecdsa_example",
+      "type": "rust"
+    }
+  }
+}

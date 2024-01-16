@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "src/publisher",
+    "src/subscriber",
+    "src/ecdsa_example_rust"
+]
