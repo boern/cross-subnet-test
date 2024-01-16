@@ -5,13 +5,9 @@ type Counter = record {
 type Subscriber = record {
   topic : text;
 };
-type CallTime = variant {
-  before_call : nat64;
-  after_call : nat64;
-  delay : nat64;
-};
+
 service : {
   "subscribe" : (subscriber : Subscriber) -> ();
   "publish" : (counter : Counter) -> ();
-  "get_inner_call_time" : () -> (CallTime) query;
+  "get_inner_call_time" : () -> (nat64);
 };

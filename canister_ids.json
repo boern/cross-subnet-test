@@ -1,6 +1,11 @@
 {
-  "publisher": {},
+  "ecdsa_example": {
+    "ic": "xgd76-fiaaa-aaaak-afjla-cai"
+  },
+  "publisher": {
+    "ic": "xbczk-iqaaa-aaaak-afjlq-cai"
+  },
   "subscriber": {
-    "ic": "v36rw-waaaa-aaaak-afjeq-cai"
+    "ic": "wmm5e-hyaaa-aaaak-afjma-cai"
   }
 }

@@ -13,7 +13,7 @@
       "candid": "src/subscriber/src/subscriber.did",
       "type": "rust"
     },
-    "ecdsa_example_rust": {
+    "ecdsa_example": {
       "gzip": true,
       "candid": "src/ecdsa_example_rust/ecdsa_example.did",
       "package": "ecdsa_example",

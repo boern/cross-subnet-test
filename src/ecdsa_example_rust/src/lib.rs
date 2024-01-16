@@ -1,11 +1,15 @@
-use ic_cdk::export::{
-    candid::CandidType,
-    serde::{Deserialize, Serialize},
-    Principal,
-};
+use candid::CandidType;
+use candid::Principal;
 use ic_cdk::{query, update};
+use serde::{Deserialize, Serialize};
+use std::cell::Cell;
 use std::convert::TryFrom;
 use std::str::FromStr;
+
+thread_local! {
+
+    static CALL_TIME: Cell<u64> = Cell::new(0);
+}
 
 #[derive(CandidType, Serialize, Debug)]
 struct PublicKeyReply {
@@ -66,14 +70,20 @@ async fn public_key() -> Result<PublicKeyReply, String> {
     let request = ECDSAPublicKey {
         canister_id: None,
         derivation_path: vec![],
-        key_id: EcdsaKeyIds::TestKeyLocalDevelopment.to_key_id(),
+        // key_id: EcdsaKeyIds::TestKeyLocalDevelopment.to_key_id(),
+        key_id: EcdsaKeyIds::ProductionKey1.to_key_id(),
     };
-
+    let before_call = ic_cdk::api::time();
     let (res,): (ECDSAPublicKeyReply,) =
         ic_cdk::call(mgmt_canister_id(), "ecdsa_public_key", (request,))
             .await
             .map_err(|e| format!("ecdsa_public_key failed {}", e.1))?;
-
+    let after_call = ic_cdk::api::time();
+    let delay = after_call - before_call;
+    ic_cdk::println!("canister inner call time:{:?}", delay);
+    CALL_TIME.with(|c| {
+        c.set(delay);
+    });
     Ok(PublicKeyReply {
         public_key_hex: hex::encode(&res.public_key),
     })
@@ -84,9 +94,10 @@ async fn sign(message: String) -> Result<SignatureReply, String> {
     let request = SignWithECDSA {
         message_hash: sha256(&message).to_vec(),
         derivation_path: vec![],
-        key_id: EcdsaKeyIds::TestKeyLocalDevelopment.to_key_id(),
+        // key_id: EcdsaKeyIds::TestKeyLocalDevelopment.to_key_id(),
+        key_id: EcdsaKeyIds::ProductionKey1.to_key_id(),
     };
-
+    let before_call = ic_cdk::api::time();
     let (response,): (SignWithECDSAReply,) = ic_cdk::api::call::call_with_payment(
         mgmt_canister_id(),
         "sign_with_ecdsa",
@@ -95,7 +106,12 @@ async fn sign(message: String) -> Result<SignatureReply, String> {
     )
     .await
     .map_err(|e| format!("sign_with_ecdsa failed {}", e.1))?;
-
+    let after_call = ic_cdk::api::time();
+    let delay = after_call - before_call;
+    ic_cdk::println!("canister inner call time:{:?}", delay);
+    CALL_TIME.with(|c| {
+        c.set(delay);
+    });
     Ok(SignatureReply {
         signature_hex: hex::encode(&response.signature),
     })
@@ -114,14 +130,17 @@ async fn verify(
     use k256::ecdsa::signature::Verifier;
     let signature = k256::ecdsa::Signature::try_from(signature_bytes.as_slice())
         .expect("failed to deserialize signature");
-    let is_signature_valid= k256::ecdsa::VerifyingKey::from_sec1_bytes(&pubkey_bytes)
+    let is_signature_valid = k256::ecdsa::VerifyingKey::from_sec1_bytes(&pubkey_bytes)
         .expect("failed to deserialize sec1 encoding into public key")
         .verify(message_bytes, &signature)
         .is_ok();
 
-    Ok(SignatureVerificationReply{
-        is_signature_valid
-    })
+    Ok(SignatureVerificationReply { is_signature_valid })
+}
+
+#[query]
+fn get_inner_call_time() -> u64 {
+    CALL_TIME.with(|c| c.get())
 }
 
 fn mgmt_canister_id() -> CanisterId {

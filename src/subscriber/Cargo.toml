@@ -1,15 +1,19 @@
 [package]
 name = "subscriber"
 version = "0.1.0"
-edition = "2018"
-
+edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 crate-type = ["cdylib"]
 
-[dependencies] 
-candid = "0.7.4"
-ic-cdk = "0.5.1"
-ic-cdk-macros = "0.5.1"
+[dependencies]
+candid = "0.9"
+ic-cdk = "0.11"
+
 serde = "1.0.126"
 serde_derive = "1.0.126"
+# log deps
+# ic-log = { git = "https://github.com/bitfinity-network/canister-sdk", package = "ic-log", tag = "v0.12.x" }
+# ic-log = { git = "https://github.com/bitfinity-network/canister-sdk", package = "ic-log", version = "0.12.0" }
+
+log = "0.4"

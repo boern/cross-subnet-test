@@ -2,11 +2,7 @@ type Counter = variant {
   topic : text;
   value : nat64;
 };
-type CallTime = variant {
-  before_call : nat64;
-  after_call : nat64;
-  delay : nat64;
-};
+
 type Subscriber = variant {
   topic : text;
 };
@@ -14,5 +10,5 @@ service : {
   "setup_subscribe" : (publisher_id : principal, topic : text) -> ();
   "update_count" : (counter : Counter) -> ();
   "get_count" : () -> (nat64);
-  "get_inner_call_time" : () -> (CallTime) query;
+  "get_inner_call_time" : () -> (nat64);
 };
